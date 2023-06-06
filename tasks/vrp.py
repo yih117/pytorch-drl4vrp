@@ -39,7 +39,7 @@ class VehicleRoutingDataset(Dataset):
         self.distance = torch.zeros((num_samples, input_size + 1, input_size + 1))
         for i in range(input_size + 1):
             for j in range(input_size + 1):
-                self.distance[:,i,j] = torch.sqrt(torch.sum(torch.pow(locations[:,:,i] - y[:,:,j], 2), dim=1))  
+                self.distance[:,i,j] = torch.sqrt(torch.sum(torch.pow(locations[:,:,i] - locations[:,:,j], 2), dim=1))  
 
         # All states will broadcast the drivers current load
         # Note that we only use a load between [0, 1] to prevent large
