@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 class VehicleRoutingDataset(Dataset):
     def __init__(self, num_samples, input_size, max_load=20, max_demand=9,
-                 seed=None, distance_func):
+                 seed=None, distance_func=None):
         super(VehicleRoutingDataset, self).__init__()
 
         if max_load < max_demand:
