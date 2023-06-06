@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 class VehicleRoutingDataset(Dataset):
     def __init__(self, num_samples, input_size, max_load=20, max_demand=9,
-                 seed=None):
+                 seed=None, distance_func):
         super(VehicleRoutingDataset, self).__init__()
 
         if max_load < max_demand:
@@ -32,6 +32,7 @@ class VehicleRoutingDataset(Dataset):
         self.num_samples = num_samples
         self.max_load = max_load
         self.max_demand = max_demand
+        self.distance_func = distance_func
 
         # Depot location will be the first node in each
         locations = torch.rand((num_samples, 2, input_size + 1))
@@ -151,9 +152,14 @@ def reward(static, tour_indices):
     y = torch.cat((start, tour, start), dim=1)
 
     # Euclidean distance between each consecutive point
+    #tour_len = 0
+    #for i in range(y.shape[0]):
+        #tour_len += distance_func(i,j)
+    print(y.shape)
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
+    tour_len.sum(1)
 
-    return tour_len.sum(1)
+    return tour_len
 
 
 def render(static, tour_indices, save_path):
