@@ -157,7 +157,7 @@ def reward(static, tour_indices):
         #tour_len += distance_func(i,j)
     print(y.shape)
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
-    tour_len.sum(1)
+    tour_len = tour_len.sum(1)
 
     return tour_len
 
