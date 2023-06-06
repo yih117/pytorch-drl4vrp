@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 class VehicleRoutingDataset(Dataset):
     def __init__(self, num_samples, input_size, max_load=20, max_demand=9,
-                 seed=None, distance_func=None):
+                 seed=None, max_time=480):
         super(VehicleRoutingDataset, self).__init__()
 
         if max_load < max_demand:
@@ -32,11 +32,14 @@ class VehicleRoutingDataset(Dataset):
         self.num_samples = num_samples
         self.max_load = max_load
         self.max_demand = max_demand
-        self.distance_func = distance_func
 
         # Depot location will be the first node in each
         locations = torch.rand((num_samples, 2, input_size + 1))
         self.static = locations
+        self.distance = torch.zeros((num_samples, input_size + 1, input_size + 1))
+        for i in range(input_size + 1):
+            for j in range(input_size + 1):
+                self.distance[:,i,j] = torch.sqrt(torch.sum(torch.pow(locations[:,:,i] - y[:,:,j], 2), dim=1))  
 
         # All states will broadcast the drivers current load
         # Note that we only use a load between [0, 1] to prevent large
@@ -155,10 +158,6 @@ def reward(static, tour_indices):
     #tour_len = 0
     #for i in range(y.shape[0]):
         #tour_len += distance_func(i,j)
-    print(tour_indices.shape)
-    print(idx.shape)
-    print(tour.shape)
-    print(y.shape)
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
     tour_len = tour_len.sum(1)
 
