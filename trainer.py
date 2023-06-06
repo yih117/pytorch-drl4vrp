@@ -308,18 +308,21 @@ def train_vrp(args):
     DYNAMIC_SIZE = 2 # (load, demand)
 
     max_load = LOAD_DICT[args.num_nodes]
+    
+    def distance_func(i, j, y_i, y_j):
+        return torch.sqrt(torch.sum(torch.pow((y_i - y_j), 2)))
 
     train_data = VehicleRoutingDataset(args.train_size,
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
-                                       args.seed)
+                                       args.seed, distance_func)
 
     valid_data = VehicleRoutingDataset(args.valid_size,
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
-                                       args.seed + 1)
+                                       args.seed + 1, distance_func)
 
     actor = DRL4TSP(STATIC_SIZE,
                     DYNAMIC_SIZE,
@@ -351,7 +354,7 @@ def train_vrp(args):
                                       args.num_nodes,
                                       max_load,
                                       MAX_DEMAND,
-                                      args.seed + 2)
+                                      args.seed + 2, distance_func)
 
     test_dir = 'test'
     test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
