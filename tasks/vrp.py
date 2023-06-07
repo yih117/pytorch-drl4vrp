@@ -141,7 +141,7 @@ class VehicleRoutingDataset(Dataset):
         return torch.tensor(tensor.data, device=dynamic.device)
 
 
-def reward(static, tour_indices):
+def reward(static, tour_indices, cumulative_reward):
     """
     Euclidean distance between all cities / nodes given by tour_indices
     """
@@ -163,9 +163,9 @@ def reward(static, tour_indices):
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
     tour_len = tour_len.sum(1)
 
-    print(self.cumulative_reward.shape)
+    print(cumulative_reward.shape)
     print(tour_len.shape)
-    self.cumulative_reward = 0
+    cumulative_reward = 0
     return tour_len
 
 
