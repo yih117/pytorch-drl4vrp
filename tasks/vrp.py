@@ -118,9 +118,8 @@ class VehicleRoutingDataset(Dataset):
         
         print(all_loads.shape)
         print(all_demands.shape)
-        print(load.shape)
-        print(demand.shape)
-        print(demand[0])
+        print(all_loads[0])
+        print(all_demands[0])
 
         # Across the minibatch - if we've chosen to visit a city, try to satisfy
         # as much demand as possible
@@ -131,8 +130,6 @@ class VehicleRoutingDataset(Dataset):
             new_demand = torch.clamp(demand - load, min=0)
             cumulative_reward = (load - new_load)
             
-            print(new_load.shape)
-            print(new_demand.shape)
 
             # Broadcast the load to all nodes, but update demand seperately
             visit_idx = visit.nonzero().squeeze()
@@ -147,7 +144,7 @@ class VehicleRoutingDataset(Dataset):
             all_demands[depot.nonzero().squeeze(), 0] = 0.
 
         tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1)), 1)
-        print(cumulative_reward)
+        #print(cumulative_reward)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
 
