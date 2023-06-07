@@ -32,6 +32,7 @@ class VehicleRoutingDataset(Dataset):
         self.num_samples = num_samples
         self.max_load = max_load
         self.max_demand = max_demand
+        self.cumulated_reward = 0
 
         # Depot location will be the first node in each
         locations = torch.rand((num_samples, 2, input_size + 1))
@@ -122,6 +123,7 @@ class VehicleRoutingDataset(Dataset):
 
             new_load = torch.clamp(load - demand, min=0)
             new_demand = torch.clamp(demand - load, min=0)
+            self.cumulative_reward += (demand - new_demand)
 
             # Broadcast the load to all nodes, but update demand seperately
             visit_idx = visit.nonzero().squeeze()
@@ -161,6 +163,9 @@ def reward(static, tour_indices):
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
     tour_len = tour_len.sum(1)
 
+    print(self.cumulative_reward.shape)
+    print(tour_len.shape)
+    self.cumulative_reward = 0
     return tour_len
 
 
