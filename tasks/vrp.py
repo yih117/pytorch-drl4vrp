@@ -163,8 +163,8 @@ def reward(static, tour_indices, cumulative_reward):
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
     tour_len = tour_len.sum(1)
 
-    print(cumulative_reward.shape)
-    print(tour_len.shape)
+    print(cumulative_reward.squeeze.shape)
+    print(cumulative_reward)
     return tour_len
 
 
