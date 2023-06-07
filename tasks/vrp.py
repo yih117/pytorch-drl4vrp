@@ -115,6 +115,11 @@ class VehicleRoutingDataset(Dataset):
 
         load = torch.gather(all_loads, 1, chosen_idx.unsqueeze(1))
         demand = torch.gather(all_demands, 1, chosen_idx.unsqueeze(1))
+        
+        print(all_loads.shape)
+        print(all_demands.shape)
+        print(load.shape)
+        print(demand.shape)
 
         # Across the minibatch - if we've chosen to visit a city, try to satisfy
         # as much demand as possible
