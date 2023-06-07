@@ -190,6 +190,8 @@ class DRL4TSP(nn.Module):
         # their representations will need to get calculated again.
         static_hidden = self.static_encoder(static)
         dynamic_hidden = self.dynamic_encoder(dynamic)
+        
+        cumulative_reward = 0
 
         for _ in range(max_steps):
 
@@ -221,7 +223,8 @@ class DRL4TSP(nn.Module):
 
             # After visiting a node update the dynamic representation
             if self.update_fn is not None:
-                dynamic = self.update_fn(dynamic, ptr.data)
+                dynamic, reward = self.update_fn(dynamic, ptr.data)
+                cumulative_reward += reward
                 dynamic_hidden = self.dynamic_encoder(dynamic)
 
                 # Since we compute the VRP in minibatches, some tours may have
@@ -244,7 +247,7 @@ class DRL4TSP(nn.Module):
         tour_idx = torch.cat(tour_idx, dim=1)  # (batch_size, seq_len)
         tour_logp = torch.cat(tour_logp, dim=1)  # (batch_size, seq_len)
 
-        return tour_idx, tour_logp, self.cumulative_reward
+        return tour_idx, tour_logp, cumulative_reward
 
 
 if __name__ == '__main__':
