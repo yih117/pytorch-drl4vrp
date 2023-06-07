@@ -120,6 +120,7 @@ class VehicleRoutingDataset(Dataset):
         print(all_demands.shape)
         print(load.shape)
         print(demand.shape)
+        print(demand[0])
 
         # Across the minibatch - if we've chosen to visit a city, try to satisfy
         # as much demand as possible
