@@ -118,6 +118,7 @@ class VehicleRoutingDataset(Dataset):
 
         # Across the minibatch - if we've chosen to visit a city, try to satisfy
         # as much demand as possible
+        cumulative_reward = 0
         if visit.any():
 
             new_load = torch.clamp(load - demand, min=0)
