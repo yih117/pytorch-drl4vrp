@@ -32,7 +32,7 @@ class VehicleRoutingDataset(Dataset):
         self.num_samples = num_samples
         self.max_load = max_load
         self.max_demand = max_demand
-        self.cumulated_reward = 0
+        self.cumulative_reward = 0
 
         # Depot location will be the first node in each
         locations = torch.rand((num_samples, 2, input_size + 1))
