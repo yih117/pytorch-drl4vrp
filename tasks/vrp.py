@@ -138,7 +138,7 @@ class VehicleRoutingDataset(Dataset):
             all_demands[depot.nonzero().squeeze(), 0] = 0.
 
         tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1)), 1)
-        print(cumulative_reward)
+        #print(cumulative_reward)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
 
@@ -164,8 +164,8 @@ def reward(static, tour_indices, cumulative_reward):
     tour_len = torch.sqrt(torch.sum(torch.pow(y[:, :-1] - y[:, 1:], 2), dim=2))
     tour_len = tour_len.sum(1)
 
-    print(cumulative_reward.squeeze().shape)
-    print(cumulative_reward)
+    #print(cumulative_reward.squeeze().shape)
+    #print(cumulative_reward)
     return tour_len
 
 
