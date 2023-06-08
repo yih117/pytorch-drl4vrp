@@ -131,14 +131,6 @@ class VehicleRoutingDataset(Dataset):
 
             # Broadcast the load to all nodes, but update demand seperately
             visit_idx = visit.nonzero().squeeze()
-            cumulative_reward = all_loads[visit_idx] - new_load[visit_idx]
-            
-            print(all_loads.shape)
-            print(new_load.shape)
-            
-            print(visit_idx.shape)
-            print(all_loads[visit_idx].shape)
-            print(new_load[visit_idx].shape)
 
             all_loads[visit_idx] = new_load[visit_idx]
             all_demands[visit_idx, chosen_idx[visit_idx]] = new_demand[visit_idx].view(-1)
@@ -150,6 +142,7 @@ class VehicleRoutingDataset(Dataset):
             all_demands[depot.nonzero().squeeze(), 0] = 0.
 
         tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1)), 1)
+        cumulative_reward = torch.sum(all_loads.unsqueeze(1)[:,1:] - dynamic[:, 0][:,1],axis=1)
         print(cumulative_reward.shape)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
