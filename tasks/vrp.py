@@ -85,7 +85,7 @@ class VehicleRoutingDataset(Dataset):
         if demands.eq(0).all():
             return demands * 0.
         
-        if times.gt(self.max_time).all();
+        if times.gt(self.max_time).all():
             return demands * 0.
 
         # Otherwise, we can choose to go anywhere where demand is > 0
