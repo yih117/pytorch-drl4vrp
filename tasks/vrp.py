@@ -132,8 +132,13 @@ class VehicleRoutingDataset(Dataset):
             # Broadcast the load to all nodes, but update demand seperately
             visit_idx = visit.nonzero().squeeze()
             cumulative_reward = all_loads[visit_idx] - new_load[visit_idx]
+            
             print(all_loads.shape)
             print(new_load.shape)
+            
+            print(visit_idx.shape)
+            print(all_loads[visit_idx].shape)
+            print(new_load[visit_idx].shape)
 
             all_loads[visit_idx] = new_load[visit_idx]
             all_demands[visit_idx, chosen_idx[visit_idx]] = new_demand[visit_idx].view(-1)
