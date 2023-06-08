@@ -146,7 +146,7 @@ class VehicleRoutingDataset(Dataset):
             all_loads[depot.nonzero().squeeze()] = 1.
             all_demands[depot.nonzero().squeeze(), 0] = 0.
 
-        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2]), 1)
+        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2].unsqueeze(1)), 1)
         cumulative_reward = torch.clamp(dynamic[:,0,1] - tensor[:,0,1], min=0)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
