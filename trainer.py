@@ -305,7 +305,7 @@ def train_vrp(args):
     LOAD_DICT = {10: 20, 20: 30, 50: 40, 100: 50}
     MAX_DEMAND = 9
     STATIC_SIZE = 2 # (x, y)
-    DYNAMIC_SIZE = 2 # (load, demand)
+    DYNAMIC_SIZE = 3 # (load, demand)
 
     max_load = LOAD_DICT[args.num_nodes]
     max_time = 480
