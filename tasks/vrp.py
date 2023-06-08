@@ -56,7 +56,7 @@ class VehicleRoutingDataset(Dataset):
 
         demands[:, 0, 0] = 0  # depot starts with a demand of 0
         
-        times = torch.full(dynamic_shape, 0)
+        times = torch.full(dynamic_shape, 0.)
         
         self.dynamic = torch.tensor(np.concatenate((loads, demands, times), axis=1))
 
