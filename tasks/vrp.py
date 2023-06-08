@@ -32,6 +32,7 @@ class VehicleRoutingDataset(Dataset):
         self.num_samples = num_samples
         self.max_load = max_load
         self.max_demand = max_demand
+        self.max_time = max_time
 
         # Depot location will be the first node in each
         locations = torch.rand((num_samples, 2, input_size + 1))
@@ -54,7 +55,10 @@ class VehicleRoutingDataset(Dataset):
         demands = demands / float(max_load)
 
         demands[:, 0, 0] = 0  # depot starts with a demand of 0
-        self.dynamic = torch.tensor(np.concatenate((loads, demands), axis=1))
+        
+        times = torch.full(dynamic_shape, 0)
+        
+        self.dynamic = torch.tensor(np.concatenate((loads, demands, times), axis=1))
 
     def __len__(self):
         return self.num_samples
@@ -74,14 +78,18 @@ class VehicleRoutingDataset(Dataset):
         # Convert floating point to integers for calculations
         loads = dynamic.data[:, 0]  # (batch_size, seq_len)
         demands = dynamic.data[:, 1]  # (batch_size, seq_len)
+        times = dynamic.data[:, 2]
 
         # If there is no positive demand left, we can end the tour.
         # Note that the first node is the depot, which always has a negative demand
         if demands.eq(0).all():
             return demands * 0.
+        
+        if times.gt(self.max_time).all();
+            return demands * 0.
 
         # Otherwise, we can choose to go anywhere where demand is > 0
-        new_mask = demands.ne(0) * demands.lt(loads)
+        new_mask = demands.ne(0) * demands.lt(loads) * times.le(self.max_time)
 
         # We should avoid traveling to the depot back-to-back
         repeat_home = chosen_idx.ne(0)
@@ -94,8 +102,9 @@ class VehicleRoutingDataset(Dataset):
         # ... unless we're waiting for all other samples in a minibatch to finish
         has_no_load = loads[:, 0].eq(0).float()
         has_no_demand = demands[:, 1:].sum(1).eq(0).float()
+        has_no_time = times[:, 0].gt(self.max_time).float()
 
-        combined = (has_no_load + has_no_demand).gt(0)
+        combined = (has_no_load + has_no_demand + has_no_time).gt(0)
         if combined.any():
             new_mask[combined.nonzero(), 0] = 1.
             new_mask[combined.nonzero(), 1:] = 0.
@@ -137,7 +146,7 @@ class VehicleRoutingDataset(Dataset):
             all_loads[depot.nonzero().squeeze()] = 1.
             all_demands[depot.nonzero().squeeze(), 0] = 0.
 
-        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1)), 1)
+        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2]), 1)
         cumulative_reward = torch.clamp(dynamic[:,0,1] - tensor[:,0,1], min=0)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
