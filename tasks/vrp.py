@@ -128,7 +128,7 @@ class VehicleRoutingDataset(Dataset):
 
             new_load = torch.clamp(load - demand, min=0)
             new_demand = torch.clamp(demand - load, min=0)
-            cumulative_reward = (load - new_load)
+            cumulative_reward = (all_loads[visit_idx] - new_load[visit_idx])
             
 
             # Broadcast the load to all nodes, but update demand seperately
