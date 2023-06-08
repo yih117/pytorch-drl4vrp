@@ -248,7 +248,7 @@ class DRL4TSP(nn.Module):
         tour_idx = torch.cat(tour_idx, dim=1)  # (batch_size, seq_len)
         tour_logp = torch.cat(tour_logp, dim=1)  # (batch_size, seq_len)
         
-        #print(cumulative_reward)
+        print(cumulative_reward)
 
         return tour_idx, tour_logp, cumulative_reward
 
