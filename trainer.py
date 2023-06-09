@@ -141,6 +141,7 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
 
     best_params = None
     best_reward = np.inf
+    max_time = 480
 
     for epoch in range(20):
 
@@ -164,7 +165,7 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
             tour_indices, tour_logp, cumulative_reward = actor(static, dynamic, x0)
 
             # Sum the log probabilities for each city in the tour
-            reward = reward_fn(static, tour_indices, cumulative_reward)
+            reward = reward_fn(static, tour_indices, cumulative_reward, max_time)
 
             # Query the critic for an estimate of the reward
             critic_est = critic(static, dynamic).view(-1)
