@@ -103,6 +103,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.',
 
         static = static.to(device)
         dynamic = dynamic.to(device)
+        dynamic = dynamic.float()
         x0 = x0.to(device) if len(x0) > 0 else None
 
         with torch.no_grad():
@@ -162,13 +163,14 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
             x0 = x0.to(device) if len(x0) > 0 else None
 
             # Full forward pass through the dataset
-            tour_indices, tour_logp, cumulative_reward = actor(static, dynamic.float(), x0)
+            dynamic = dynamic.float()
+            tour_indices, tour_logp, cumulative_reward = actor(static, dynamic, x0)
 
             # Sum the log probabilities for each city in the tour
             reward = reward_fn(static, tour_indices, cumulative_reward, max_time)
 
             # Query the critic for an estimate of the reward
-            critic_est = critic(static, dynamic.float()).view(-1)
+            critic_est = critic(static, dynamic).view(-1)
 
             advantage = (reward - critic_est)
             actor_loss = torch.mean(advantage.detach() * tour_logp.sum(dim=1))
