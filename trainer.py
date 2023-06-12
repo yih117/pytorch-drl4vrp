@@ -318,13 +318,13 @@ def train_vrp(args):
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
-                                       args.seed, max_time)
+                                       args.seed, args.max_time)
 
     valid_data = VehicleRoutingDataset(args.valid_size,
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
-                                       args.seed + 1, max_time)
+                                       args.seed + 1, args.max_time)
 
     actor = DRL4TSP(STATIC_SIZE,
                     DYNAMIC_SIZE,
