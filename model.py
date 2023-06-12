@@ -227,6 +227,7 @@ class DRL4TSP(nn.Module):
                 dynamic, reward = self.update_fn(dynamic, ptr.data)
                 cumulative_reward += reward
                 #print(reward)
+                dynamic = dyanmic.float()
                 dynamic_hidden = self.dynamic_encoder(dynamic)
 
                 # Since we compute the VRP in minibatches, some tours may have
