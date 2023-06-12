@@ -156,7 +156,7 @@ class VehicleRoutingDataset(Dataset):
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
 
-def reward(static, dynamic, tour_indices, cumulative_reward, max_time):
+def reward(static, tour_indices, cumulative_reward, max_time):
     """
     Euclidean distance between all cities / nodes given by tour_indices
     """
@@ -180,7 +180,7 @@ def reward(static, dynamic, tour_indices, cumulative_reward, max_time):
 
     #print(cumulative_reward.squeeze().shape)
     #print(cumulative_reward)
-    cumulative_reward -= 1000 * torch.clamp(dynamic[:,2,0] - max_time, min=0)
+    #cumulative_reward -= 1000 * torch.clamp(dynamic[:,2,0] - max_time, min=0)
     return cumulative_reward
 
 
