@@ -147,7 +147,7 @@ class VehicleRoutingDataset(Dataset):
             all_loads[depot.nonzero().squeeze()] = 1.
             all_demands[depot.nonzero().squeeze(), 0] = 0.
             
-         for i in range(dynamic.shape[0]):
+        for i in range(dynamic.shape[0]):
             dynamic[i,2] += self.distance[i,dynamic[i,3,0],chosen_idx[i]]
             dynamic[i,3] = chosen_idx[i]
 
