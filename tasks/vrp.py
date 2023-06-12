@@ -57,8 +57,9 @@ class VehicleRoutingDataset(Dataset):
         demands[:, 0, 0] = 0  # depot starts with a demand of 0
         
         times = torch.full(dynamic_shape, 0.)
+        current_loc = torch.full(dynamic_shape, 0)
         
-        self.dynamic = torch.tensor(np.concatenate((loads, demands, times), axis=1))
+        self.dynamic = torch.tensor(np.concatenate((loads, demands, times, current_loc), axis=1))
 
     def __len__(self):
         return self.num_samples
@@ -145,8 +146,12 @@ class VehicleRoutingDataset(Dataset):
         if depot.any():
             all_loads[depot.nonzero().squeeze()] = 1.
             all_demands[depot.nonzero().squeeze(), 0] = 0.
+            
+         for i in range(dynamic.shape[0]):
+            dynamic[i,2] += self.distance[i,dynamic[i,3,0],chosen_idx[i]]
+            dynamic[i,3] = chosen_idx[i]
 
-        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2].unsqueeze(1)), 1)
+        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2].unsqueeze(1), dynamic[:,3].unsqueeze(1)), 1)
         cumulative_reward = torch.clamp(dynamic[:,0,1] - tensor[:,0,1], min=0)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
