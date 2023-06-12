@@ -382,7 +382,7 @@ if __name__ == '__main__':
     parser.add_argument('--layers', dest='num_layers', default=1, type=int)
     parser.add_argument('--train-size',default=1000000, type=int)
     parser.add_argument('--valid-size', default=1000, type=int)
-    parser.add_argument('--max_time', default=1, type=float)
+    parser.add_argument('--max_time', default=20, type=float)
 
     args = parser.parse_args()
 
