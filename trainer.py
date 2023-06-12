@@ -122,7 +122,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.',
 
 
 def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
-          render_fn, batch_size, actor_lr, critic_lr, max_grad_norm, max_time
+          render_fn, batch_size, actor_lr, critic_lr, max_grad_norm, max_time,
           **kwargs):
     """Constructs the main actor & critic networks, and performs all training."""
 
