@@ -87,7 +87,7 @@ class Critic(nn.Module):
         return output
 
 
-def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.',
+def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_time,
              num_plot=5):
     """Used to monitor progress on a validation set & optionally plot solution."""
 
@@ -109,7 +109,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.',
         with torch.no_grad():
             tour_indices, _, cumulative_reward = actor.forward(static, dynamic, x0)
 
-        reward = reward_fn(static, tour_indices, cumulative_reward).mean().item()
+        reward = reward_fn(static, tour_indices, cumulative_reward, max_time).mean().item()
         rewards.append(reward)
 
         if render_fn is not None and batch_idx < num_plot:
@@ -219,7 +219,7 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
         valid_dir = os.path.join(save_dir, '%s' % epoch)
 
         mean_valid = validate(valid_loader, actor, reward_fn, render_fn,
-                              valid_dir, num_plot=5)
+                              valid_dir, max_time, num_plot=5)
 
         # Save best model parameters
         if mean_valid < best_reward:
@@ -360,7 +360,7 @@ def train_vrp(args):
 
     test_dir = 'test'
     test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
-    out = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, num_plot=5)
+    out = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, args.max_time num_plot=5)
 
     print('Average tour length: ', out)
 
