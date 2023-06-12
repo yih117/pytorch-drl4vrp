@@ -122,6 +122,8 @@ class VehicleRoutingDataset(Dataset):
         # Clone the dynamic variable so we don't mess up graph
         all_loads = dynamic[:, 0].clone()
         all_demands = dynamic[:, 1].clone()
+        all_distance = dynamic[:, 2].clone()
+        all_current_loc = dynamic[:, 3].clone()
 
         load = torch.gather(all_loads, 1, chosen_idx.unsqueeze(1))
         demand = torch.gather(all_demands, 1, chosen_idx.unsqueeze(1))
@@ -148,10 +150,10 @@ class VehicleRoutingDataset(Dataset):
             all_demands[depot.nonzero().squeeze(), 0] = 0.
             
         for i in range(dynamic.shape[0]):
-            dynamic[i,2] += self.distance[i, round(dynamic[i,3,0].item()),chosen_idx[i]]
-            dynamic[i,3] = chosen_idx[i]
+            all_distance[i] += self.distance[i, round(dynamic[i,3,0].item()),chosen_idx[i]]
+            all_current_loc[i] = chosen_idx[i]
 
-        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), dynamic[:,2].unsqueeze(1), dynamic[:,3].unsqueeze(1)), 1)
+        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), all_distance.unsqueeze(1), all_current_loc.unsqueeze(1)), 1)
         cumulative_reward = torch.clamp(dynamic[:,0,1] - tensor[:,0,1], min=0)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
