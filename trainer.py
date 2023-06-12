@@ -122,7 +122,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.',
 
 
 def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
-          render_fn, batch_size, actor_lr, critic_lr, max_grad_norm,
+          render_fn, batch_size, actor_lr, critic_lr, max_grad_norm, max_time
           **kwargs):
     """Constructs the main actor & critic networks, and performs all training."""
 
@@ -142,7 +142,6 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
 
     best_params = None
     best_reward = np.inf
-    max_time = 480
 
     for epoch in range(20):
 
@@ -311,7 +310,6 @@ def train_vrp(args):
     DYNAMIC_SIZE = 4 # (load, demand, time, current_loc)
 
     max_load = LOAD_DICT[args.num_nodes]
-    max_time = 480
     
     def distance_func(i, j, y_i, y_j):
         return torch.sqrt(torch.sum(torch.pow((y_i - y_j), 2)))
@@ -358,7 +356,7 @@ def train_vrp(args):
                                       args.num_nodes,
                                       max_load,
                                       MAX_DEMAND,
-                                      args.seed + 2, max_time)
+                                      args.seed + 2, args.max_time)
 
     test_dir = 'test'
     test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
@@ -384,6 +382,7 @@ if __name__ == '__main__':
     parser.add_argument('--layers', dest='num_layers', default=1, type=int)
     parser.add_argument('--train-size',default=1000000, type=int)
     parser.add_argument('--valid-size', default=1000, type=int)
+    parser.add_argument('--max_time', default=1, type=float)
 
     args = parser.parse_args()
 
