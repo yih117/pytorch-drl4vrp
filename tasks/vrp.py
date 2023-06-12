@@ -183,7 +183,7 @@ def reward(static, tour_indices, cumulative_reward, max_time):
     #print(cumulative_reward.squeeze().shape)
     #print(cumulative_reward)
     #cumulative_reward -= 1000 * torch.clamp(dynamic[:,2,0] - max_time, min=0)
-    return cumulative_reward
+    return -cumulative_reward
 
 
 def render(static, tour_indices, save_path):
