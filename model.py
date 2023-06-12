@@ -189,7 +189,6 @@ class DRL4TSP(nn.Module):
         # all 'pointing' iterations. When / if the dynamic elements change,
         # their representations will need to get calculated again.
         static_hidden = self.static_encoder(static)
-        print(dynamic.dtype)
         dynamic_hidden = self.dynamic_encoder(dynamic)
         
         cumulative_reward = 0
@@ -225,7 +224,7 @@ class DRL4TSP(nn.Module):
             # After visiting a node update the dynamic representation
             if self.update_fn is not None:
                 dynamic, reward = self.update_fn(dynamic, ptr.data)
-                cumulative_reward += reward.item()
+                cumulative_reward += reward
                 #print(reward)
                 dynamic = dynamic.float()
                 dynamic_hidden = self.dynamic_encoder(dynamic)
