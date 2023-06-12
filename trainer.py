@@ -87,7 +87,7 @@ class Critic(nn.Module):
         return output
 
 
-def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_time,
+def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_time=20,
              num_plot=5):
     """Used to monitor progress on a validation set & optionally plot solution."""
 
