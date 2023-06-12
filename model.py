@@ -225,7 +225,7 @@ class DRL4TSP(nn.Module):
             # After visiting a node update the dynamic representation
             if self.update_fn is not None:
                 dynamic, reward = self.update_fn(dynamic, ptr.data)
-                cumulative_reward += reward
+                cumulative_reward += reward.item()
                 #print(reward)
                 dynamic = dynamic.float()
                 dynamic_hidden = self.dynamic_encoder(dynamic)
