@@ -201,6 +201,8 @@ def render(static, tour_indices, save_path):
     axes = [a for ax in axes for a in ax]
 
     for i, ax in enumerate(axes):
+        
+        ax.plot(static[i,0,:], static[i,1,:], zorder=1, label=0)
 
         # Convert the indices back into a tour
         idx = tour_indices[i]
