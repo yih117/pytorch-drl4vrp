@@ -137,8 +137,8 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
     actor_optim = optim.Adam(actor.parameters(), lr=actor_lr)
     critic_optim = optim.Adam(critic.parameters(), lr=critic_lr)
 
-    train_loader = DataLoader(train_data, batch_size, True, num_workers=2, pin_memory = True)
-    valid_loader = DataLoader(valid_data, batch_size, False, num_workers=2, pin_memory = True)
+    train_loader = DataLoader(train_data, batch_size, True, num_workers=0, pin_memory = True)
+    valid_loader = DataLoader(valid_data, batch_size, False, num_workers=0, pin_memory = True)
 
     best_params = None
     best_reward = np.inf
