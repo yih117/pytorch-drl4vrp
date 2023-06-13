@@ -202,7 +202,9 @@ def render(static, tour_indices, save_path):
 
     for i, ax in enumerate(axes):
         
-        ax.plot(static[i,0,:].cpu().data.numpy(), static[i,1,:].cpu().data.numpy(), zorder=1, label=0)
+        #ax.plot(static[i,0,:].cpu().data.numpy(), static[i,1,:].cpu().data.numpy(), zorder=1, label=0)
+        for j in range(static.shape[2]):
+            ax.plot(static[i,0,j], static[i,1,j], marker='v', color="white")
 
         # Convert the indices back into a tour
         idx = tour_indices[i]
