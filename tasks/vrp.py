@@ -202,7 +202,7 @@ def render(static, tour_indices, save_path):
 
     for i, ax in enumerate(axes):
         
-        ax.title.set_text(np.array2string(tour_indices[i].cpu().data.numpy())
+        ax.title.set_text(np.array2string(tour_indices[i].cpu().data.numpy()))
         #ax.plot(static[i,0,:].cpu().data.numpy(), static[i,1,:].cpu().data.numpy(), zorder=1, label=0)
         for j in range(1, static.shape[2]):
             ax.plot(static[i,0,j].cpu().data.numpy(), static[i,1,j].cpu().data.numpy(), marker='v', color="black")
