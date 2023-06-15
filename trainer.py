@@ -335,6 +335,11 @@ def train_vrp(args):
                     args.dropout).to(device)
 
     critic = StateCritic(STATIC_SIZE, DYNAMIC_SIZE, args.hidden_size).to(device)
+    
+    total_params_actor = sum(p.numel() for p in actor.parameters())
+    total_params_critic = sum(p.numel() for p in critic.parameters())
+    print(f"Number of Actor parameters: {total_params_actor}")
+    print(f"Number of Actor parameters: {total_params_critic}")
 
     kwargs = vars(args)
     kwargs['train_data'] = train_data
