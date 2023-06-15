@@ -86,7 +86,6 @@ class Critic(nn.Module):
         output = self.fc3(output).sum(dim=2)
         return output
 
-
 def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_time=20,
              num_plot=5):
     """Used to monitor progress on a validation set & optionally plot solution."""
@@ -97,6 +96,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
         os.makedirs(save_dir)
 
     rewards = []
+    baseline_rewards = []
     for batch_idx, batch in enumerate(data_loader):
 
         static, dynamic, x0 = batch
@@ -106,11 +106,52 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
         dynamic = dynamic.float()
         x0 = x0.to(device) if len(x0) > 0 else None
 
+        def greedy_baseline(static, dynamic, max_time, data_loader):
+            cumulative_reward = torch.zeros((static.shape[0]))
+            capacity = 1
+            for i in range(static.shape[0]):
+                current_loc = 0
+                time = 0
+                reward = 0
+
+                load = 1
+                
+                while(time < max_time):
+                    best_ratio = 0
+                    best_next = 0
+                    for j in range(1, static.shape[2]):
+                        if current_loc == j:
+                            ratio = -1
+                        else:
+                            cost = data_loader.dataset.distance[i, current_loc, j]
+                            gain = dynamic[i,0,j] if dynamic[i,0,j] <= load else -999
+                            ratio = gain/cost
+                        if ratio > best_ratio:
+                            best_ratio = ratio
+                            best_next = j
+                            
+                    if best_next > 0:
+                        load -= dynamic[i,0,best_next]
+                        reward += dynamic[i,0,best_next]
+                        dynamic[i,0,best_next] = 0
+                        time += data_loader.dataset.distance[i, current_loc, j]
+                        current_loc = best_next
+                    else:
+                        load = 1
+                        time += data_loader.dataset.distance[i, current_loc, j]
+                        current_loc = best_next
+                        
+                cumulative_reward[i] = reward
+            return cumulative_reward
+                
+        
         with torch.no_grad():
             tour_indices, _, cumulative_reward = actor.forward(static, dynamic, x0)
 
         reward = reward_fn(static, tour_indices, cumulative_reward, max_time).mean().item()
+        baseline_reward = greedy_baseline(static, dynamic, max_time, data_loader).mean().item()
         rewards.append(reward)
+        baseline_rewards.append(baseline_reward)
 
         if render_fn is not None and batch_idx < num_plot:
             name = 'batch%d_%2.4f.png'%(batch_idx, reward)
@@ -118,7 +159,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
             render_fn(static, tour_indices, path)
 
     actor.train()
-    return np.mean(rewards)
+    return np.mean(rewards), np.mean(baseline_rewards)
 
 
 def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
@@ -218,7 +259,7 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
         # Save rendering of validation set tours
         valid_dir = os.path.join(save_dir, '%s' % epoch)
 
-        mean_valid = validate(valid_loader, actor, reward_fn, render_fn,
+        mean_valid, mean_baseline = validate(valid_loader, actor, reward_fn, render_fn,
                               valid_dir, max_time, num_plot=5)
 
         # Save best model parameters
@@ -232,9 +273,9 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
             save_path = os.path.join(save_dir, 'critic.pt')
             torch.save(critic.state_dict(), save_path)
 
-        print('Mean epoch loss/reward: %2.4f, %2.4f, %2.4f, took: %2.4fs '\
+        print('Mean epoch loss/reward: %2.4f, %2.4f, %2.4f, %2.4f took: %2.4fs '\
               '(%2.4fs / 100 batches)\n' % \
-              (mean_loss, mean_reward, mean_valid, time.time() - epoch_start,
+              (mean_loss, mean_reward, mean_valid, mean_baseline, time.time() - epoch_start,
               np.mean(times)))
 
 
@@ -365,9 +406,10 @@ def train_vrp(args):
 
     test_dir = 'test'
     test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
-    out = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, args.max_time, num_plot=5)
+    out, baseline = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, args.max_time, num_plot=5)
 
     print('Average tour length: ', out)
+    print('Average baseline tour length: ', baseline)
 
 
 if __name__ == '__main__':
