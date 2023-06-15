@@ -437,7 +437,7 @@ if __name__ == '__main__':
     #args.checkpoint = os.path.join('vrp', '10', '12_59_47.350165' + os.path.sep)
     #print(args.checkpoint)
     
-    torch.autograd.set_detect_anomaly(True)
+    #torch.autograd.set_detect_anomaly(True)
 
     if args.task == 'tsp':
         train_tsp(args)
