@@ -133,6 +133,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                     if best_next > 0:
                         load -= dynamic[i,0,best_next]
                         reward += dynamic[i,0,best_next]
+                        print(dynamic[i,0,best_next])
                         dynamic[i,0,best_next] = 0
                         time += data_loader.dataset.distance[i, current_loc, j]
                         current_loc = best_next
