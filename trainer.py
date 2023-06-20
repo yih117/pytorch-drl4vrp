@@ -124,17 +124,17 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                             ratio = -1
                         else:
                             cost = data_loader.dataset.distance[i, current_loc, j]
-                            gain = dynamic[i,0,j] if dynamic[i,0,j] <= load else -999
+                            gain = dynamic[i,1,j] if dynamic[i,1,j] <= load else -999
                             ratio = gain/cost
                         if ratio > best_ratio:
                             best_ratio = ratio
                             best_next = j
                             
                     if best_next > 0:
-                        load -= dynamic[i,0,best_next]
-                        reward += dynamic[i,0,best_next]
-                        print(dynamic[i,0,best_next])
-                        dynamic[i,0,best_next] = 0
+                        load -= dynamic[i,1,best_next]
+                        reward += dynamic[i,1,best_next]
+                        #print(dynamic[i,1,best_next])
+                        dynamic[i,1,best_next] = 0
                         time += data_loader.dataset.distance[i, current_loc, j]
                         current_loc = best_next
                     else:
