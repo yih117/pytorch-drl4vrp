@@ -117,7 +117,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                 load = 1
                 
                 while(time < max_time):
-                    best_ratio = 0
+                    best_ratio = tensor.
                     best_next = 0
                     for j in range(1, static.shape[2]):
                         if current_loc == j:
@@ -126,6 +126,8 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                             cost = data_loader.dataset.distance[i, current_loc, j]
                             gain = dynamic[i,1,j] if dynamic[i,1,j] <= load else -999
                             ratio = gain/cost
+                        print(ratio)
+                        print(best_ratio)
                         if ratio > best_ratio:
                             best_ratio = ratio
                             best_next = j
