@@ -124,7 +124,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                             ratio = -1
                         else:
                             cost = data_loader.dataset.distance[i, current_loc, j]
-                            gain = dynamic[i,1,j] if dynamic[i,1,j] <= load else -999
+                            gain = dynamic[i,1,j] if dynamic[i,1,j] <= load else torch.tensor(-999, device=cuda0)
                             ratio = gain/cost
                         print(ratio)
                         print(best_ratio)
