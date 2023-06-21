@@ -117,7 +117,7 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                 load = 1
                 
                 while(time < max_time):
-                    best_ratio = tensor
+                    best_ratio = 0
                     best_next = 0
                     for j in range(1, static.shape[2]):
                         if current_loc == j:
