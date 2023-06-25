@@ -53,7 +53,7 @@ class VehicleRoutingDataset(Dataset):
         demand = np.insert(demand, 0, 0, 1)
         demands = np.expand_dims(demand, 1) / float(self.max_load)
         
-        self.times = torch.full(dynamic_shape, float(0))
+        times = torch.full(dynamic_shape, float(0))
         self.current_loc = torch.full(dynamic_shape, 0)
         
         self.dynamic = torch.tensor(np.concatenate((loads, demands, times, current_loc), axis=1))
