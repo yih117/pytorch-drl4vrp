@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 class VehicleRoutingDataset(Dataset):
     def __init__(self, filepath):
         super(VehicleRoutingDataset, self).__init__()
-        data = load(filepath)
+        data = np.load(filepath)
         dimension = data['dimension']
         capacity = data['capacity']
         location = data['location']
