@@ -165,6 +165,7 @@ class VehicleRoutingDataset(Dataset):
         all_demands = dynamic[:, 1].clone()
         all_distance = dynamic[:, 2].clone()
         all_current_loc = dynamic[:, 3].clone()
+        all_reward = dynamic[:, 4].clone()
 
         load = torch.gather(all_loads, 1, chosen_idx.unsqueeze(1))
         demand = torch.gather(all_demands, 1, chosen_idx.unsqueeze(1))
@@ -172,7 +173,7 @@ class VehicleRoutingDataset(Dataset):
 
         # Across the minibatch - if we've chosen to visit a city, try to satisfy
         # as much demand as possible
-        cumulative_reward = 0
+
         if visit.any():
 
             new_load = torch.clamp(load - demand, min=0)
@@ -194,8 +195,10 @@ class VehicleRoutingDataset(Dataset):
             all_distance[i] += self.distance[i, round(dynamic[i,3,0].item()),chosen_idx[i]]
             all_current_loc[i] = chosen_idx[i]
 
-        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), all_distance.unsqueeze(1), all_current_loc.unsqueeze(1)), 1)
-        cumulative_reward = torch.clamp(dynamic[:,0,1] - tensor[:,0,1], min=0)
+        tensor = torch.cat((all_loads.unsqueeze(1), all_demands.unsqueeze(1), all_distance.unsqueeze(1), all_current_loc.unsqueeze(1), all_reward.unsqueeze(1)), 1)
+        cumulative_reward = torch.zeros((all_reward.shape[0]))
+        for i in range(all_reward.shape[0]):
+            cumulative_reward[i] += all_reward[i, chosen_idx[i]]
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
 
