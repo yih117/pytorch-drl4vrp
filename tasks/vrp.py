@@ -199,6 +199,7 @@ class VehicleRoutingDataset(Dataset):
         cumulative_reward = torch.zeros((all_reward.shape[0]))
         for i in range(all_reward.shape[0]):
             cumulative_reward[i] += all_reward[i, chosen_idx[i]]
+            cumulative_reward[i] -= 0.1*torch.clamp(all_distance[i, chosen_idx[i]] - self.max_time, min=0)
         return torch.tensor(tensor.data, device=dynamic.device), cumulative_reward
 
 
