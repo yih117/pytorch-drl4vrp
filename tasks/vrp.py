@@ -17,6 +17,47 @@ import matplotlib.pyplot as plt
 
 
 class VehicleRoutingDataset(Dataset):
+    def __init__(self, filepath):
+        super(VehicleRoutingDataset, self).__init__()
+        data = load(filepath)
+        dimension = data['dimension']
+        capacity = data['capacity']
+        location = data['location']
+        distance = data['distance']
+        demand = data['demand']
+        reward = data['reward']
+        load_time = data['load_time']
+        time_limit = data['time_limit']
+
+        input_size = dimension[0]
+
+        self.num_samples = dimension.shape[0]
+        self.max_load = capacity[0]
+        self.max_demand = 200
+        self.max_time = time_limit
+        self.static = np.swapaxes(location, 1, 2)
+        self.distance = distance
+        for i in range(distance.shape[0]):
+            for j in range(distance.shape[2]):
+                self.distance[i, :, j] += load_time[i,j]
+
+        self.reward = np.expand_dims(reward, 1)
+
+        dynamic_shape = (self.num_samples, 1, input_size + 1)
+        loads = torch.full(dynamic_shape, 1.)
+
+        # All states will have their own intrinsic demand in [1, max_demand), 
+        # then scaled by the maximum load. E.g. if load=10 and max_demand=30, 
+        # demands will be scaled to the range (0, 3)
+        #self.demands = torch.randint(1, max_demand + 1, dynamic_shape)
+        demand = np.insert(demand, 0, 0, 1)
+        demands = np.expand_dims(demand, 1) / float(self.max_load)
+        
+        self.times = torch.full(dynamic_shape, float(0))
+        self.current_loc = torch.full(dynamic_shape, 0)
+        
+        self.dynamic = torch.tensor(np.concatenate((loads, demands, times, current_loc), axis=1))
+        
     def __init__(self, num_samples, input_size, max_load=20, max_demand=9,
                  seed=None, max_time=480):
         super(VehicleRoutingDataset, self).__init__()
