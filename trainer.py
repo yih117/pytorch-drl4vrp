@@ -137,13 +137,16 @@ def validate(data_loader, actor, reward_fn, render_fn=None, save_dir='.', max_ti
                         reward += dynamic[i,1,best_next]
                         #print(dynamic[i,1,best_next])
                         dynamic[i,1,best_next] = 0
-                        time += data_loader.dataset.distance[i, current_loc, j]
+                        time += data_loader.dataset.distance[i, current_loc, best_next]
                         current_loc = best_next
                     else:
                         load = 1
-                        time += data_loader.dataset.distance[i, current_loc, j]
+                        time += data_loader.dataset.distance[i, current_loc, best_next]
                         current_loc = best_next
-                        
+
+                time += data_loader.dataset.distance[i, current_loc, 0]
+                
+                reward -= 0.1*(time - max_time)
                 cumulative_reward[i] = reward
             return cumulative_reward
                 
@@ -187,7 +190,7 @@ def train(actor, critic, task, num_nodes, train_data, valid_data, reward_fn,
     best_params = None
     best_reward = np.inf
 
-    for epoch in range(5):
+    for epoch in range(20):
 
         actor.train()
         critic.train()
@@ -351,7 +354,7 @@ def train_vrp(args):
     LOAD_DICT = {10: 20, 20: 30, 40: 1500, 50: 40, 100: 50}
     MAX_DEMAND = 200
     STATIC_SIZE = 2 # (x, y)
-    DYNAMIC_SIZE = 4 # (load, demand, time, current_loc)
+    DYNAMIC_SIZE = 5 # (load, demand, time, current_loc, reward)
 
     max_load = LOAD_DICT[args.num_nodes]
     
