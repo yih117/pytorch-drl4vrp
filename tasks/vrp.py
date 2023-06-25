@@ -57,7 +57,8 @@ class VehicleRoutingDataset(Dataset):
         self.current_loc = torch.full(dynamic_shape, 0)
         
         self.dynamic = torch.tensor(np.concatenate((loads, demands, times, current_loc), axis=1))
-        
+
+    '''
     def __init__(self, num_samples, input_size, max_load=20, max_demand=9,
                  seed=None, max_time=480):
         super(VehicleRoutingDataset, self).__init__()
@@ -101,6 +102,7 @@ class VehicleRoutingDataset(Dataset):
         current_loc = torch.full(dynamic_shape, 0)
         
         self.dynamic = torch.tensor(np.concatenate((loads, demands, times, current_loc), axis=1))
+    '''
 
     def __len__(self):
         return self.num_samples
