@@ -348,8 +348,8 @@ def train_vrp(args):
     from tasks.vrp import VehicleRoutingDataset
 
     # Determines the maximum amount of load for a vehicle based on num nodes
-    LOAD_DICT = {10: 20, 20: 30, 50: 40, 100: 50}
-    MAX_DEMAND = 9
+    LOAD_DICT = {10: 20, 20: 30, 40: 1500, 50: 40, 100: 50}
+    MAX_DEMAND = 200
     STATIC_SIZE = 2 # (x, y)
     DYNAMIC_SIZE = 4 # (load, demand, time, current_loc)
 
@@ -358,17 +358,34 @@ def train_vrp(args):
     def distance_func(i, j, y_i, y_j):
         return torch.sqrt(torch.sum(torch.pow((y_i - y_j), 2)))
 
-    train_data = VehicleRoutingDataset(args.train_size,
+    train_data = None
+    valid_data = None
+    test_data = None
+
+    if args.train_filepath is None or args.test_filepath is None:
+
+        train_data = VehicleRoutingDataset(args.train_size,
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
                                        args.seed, args.max_time)
 
-    valid_data = VehicleRoutingDataset(args.valid_size,
+        valid_data = VehicleRoutingDataset(args.valid_size,
                                        args.num_nodes,
                                        max_load,
                                        MAX_DEMAND,
                                        args.seed + 1, args.max_time)
+        
+        test_data = VehicleRoutingDataset(args.valid_size,
+                                      args.num_nodes,
+                                      max_load,
+                                      MAX_DEMAND,
+                                      args.seed + 2, args.max_time)
+    else:
+        train_data = VehicleRoutingDataset(args.train_filepath)
+        valid_data = VehicleRoutingDataset(args.test_filepath)
+        test_data = VehicleRoutingDataset(args.test_filepath)
+    
 
     actor = DRL4TSP(STATIC_SIZE,
                     DYNAMIC_SIZE,
@@ -401,12 +418,6 @@ def train_vrp(args):
     if not args.test:
         train(actor, critic, **kwargs)
 
-    test_data = VehicleRoutingDataset(args.valid_size,
-                                      args.num_nodes,
-                                      max_load,
-                                      MAX_DEMAND,
-                                      args.seed + 2, args.max_time)
-
     test_dir = 'test'
     test_loader = DataLoader(test_data, args.batch_size, False, num_workers=0)
     out, baseline = validate(test_loader, actor, vrp.reward, vrp.render, test_dir, args.max_time, num_plot=5)
@@ -433,6 +444,8 @@ if __name__ == '__main__':
     parser.add_argument('--train-size',default=1000000, type=int)
     parser.add_argument('--valid-size', default=1000, type=int)
     parser.add_argument('--max_time', default=20, type=float)
+    parser.add_argument('--train_filepath', default=None)
+    parser.add_argument('--test_filepath', default=None)
 
     args = parser.parse_args()
 
