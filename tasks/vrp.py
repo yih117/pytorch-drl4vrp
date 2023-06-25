@@ -20,8 +20,8 @@ class VehicleRoutingDataset(Dataset):
     def __init__(self, filepath):
         super(VehicleRoutingDataset, self).__init__()
         data = np.load(filepath)
-        dimension = data['dimension']
-        capacity = data['capacity']
+        dimension = torch.tensor(data['dimension'])
+        capacity = torch.tensor(data['capacity'])
         location = data['location']
         distance = data['distance']
         demand = data['demand']
